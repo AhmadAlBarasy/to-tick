@@ -1,0 +1,30 @@
+project :
+    To Tick, a simple to do list web application which gives you the ability to create a list, add tasks and mark them as completed
+    or to be done, each user has a separate account that is connected to your email.
+
+Data to be collected :
+    list data :
+    - user
+    - name
+    - date
+    - createdAt
+    - description
+    tasks [an array of tasks].
+    - coverPhoto
+
+    task data : 
+    - taskText
+    - done
+    - list.
+
+    user data :
+    - displayName
+    - profilePicture
+    - password
+    - email
+
+user story :
+    the user will have a welcome page that prompts him to sign or log in, then after that he will go to a main page where all of
+    his lists are listed, he can click on a list to go to it's page and he is then able to add, delete and edit his tasks, and he can
+    mark those tasks as "done" or "to be done", and the user can access his profile by clicking on the user icon located at the
+    navbar and he can edit his information, add, change or remove his profile picture. 
