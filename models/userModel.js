@@ -27,9 +27,13 @@ const userSchema = new mongoose.Schema({
         type : String,
         required : true,
         minLength : [8, 'a password must be at least 8 characters'],
+        select : false,
     },
     passwordChangedAt: Date,
-    resetToken: String,
+    resetToken: {
+        type : String,
+        select : false,
+    },
     passwordResetExpires: Date,
     active: {
         type: Boolean,
@@ -39,13 +43,12 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.methods.createResetPasswordToken = function () {
-    const expiryDate = Date.now() + 10 * 60 * 1000;
     const token = crypto.randomBytes(32).toString('hex');
     this.resetToken = crypto.createHash('sha256').update(token).digest('hex');
-    this.passwordResetExpires = expiryDate;
-    console.log({ token }, this.passwordResetExpires);
+    const date = Date.now() + 600000;
+    this.passwordResetExpires = date;
     return token;
-};
+}
 
 userSchema.methods.correctPassword = async function (input, userPassword) {
     return bcrypt.compare(input, userPassword);
