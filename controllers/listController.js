@@ -32,7 +32,7 @@ exports.getList = async(req, res, next) => {
     if (!list) {
         return next(new AppError(404, 'List not found.'));
     }
-    sendResponse(res, 'sucess', 200, data);
+    sendResponse(res, 'sucess', 200, list);
 };
 
 exports.updateList = catchAsync(async(req, res, next) => {

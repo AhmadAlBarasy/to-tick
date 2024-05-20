@@ -1,0 +1,18 @@
+extends base
+
+block content
+	if isLoggedIn
+		.d-flex.flex-column.justify-content-center.align-items-center.min-vh-100.text-center
+			p(style='font-size: 1.5rem;') You are already logged in.
+			//- You can add more content or links here for logged-in users
+	else
+		.d-flex.flex-column.justify-content-center.align-items-center.min-vh-100.text-center
+			//- Login form
+			form(action='/login', method='post')
+				.mb-3
+					label(for='email', class='form-label', style='font-size: 1.5rem;') Email
+					input#email.form-control(type='email', name='email', placeholder='Enter your email', required, style='font-size: 1.5rem;')
+				.mb-3
+					label(for='password', class='form-label', style='font-size: 1.5rem;') Password
+					input#password.form-control(type='password', name='password', placeholder='Enter your password', required, style='font-size: 1.5rem;')
+				button.btn.btn-primary(type='submit', style='font-size: 1.5rem;') Log in

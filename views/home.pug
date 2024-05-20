@@ -1,0 +1,12 @@
+extends base
+
+block content
+	if isLoggedIn
+		//- Your content for logged-in users goes here
+		.d-flex.flex-column.justify-content-center.align-items-center.min-vh-100.text-center
+			p Home page
+	else
+		.d-flex.flex-column.justify-content-center.align-items-center.min-vh-100.text-center
+			p.display-4.manage-your-day
+				| Manage your day with easy to use, seamless, all in one To do list service
+			a.btn.btn-primary.btn-lg.mt-3(href='/signup') Get Started now

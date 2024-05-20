@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
+const viewController = require('./viewController');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
@@ -40,6 +41,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 exports.login = catchAsync(async (req, res, next) => {
 	const credintials = req.body;
 	const {email, password} = credintials;
+	console.log(req.body);
 	if (! email  || ! password) {
 		return next(new AppError(400, 'Missing Credintials'));
 	}
@@ -48,12 +50,14 @@ exports.login = catchAsync(async (req, res, next) => {
 		return next(new AppError(401, 'Incorrect email or password'));
 	}
 	const token = signToken(user._id);
+	if (req.originalUrl.startsWith('/api')){
+		sendToken(res, token, 200, user);
+	}
 	res.cookie('jwt', token, {
 		expries : Date.now() + process.env.JWT_EXPIRES_IN * 86400000,
 		httpOnly : true,
 	});
-	user.password = undefined;
-	sendToken(res, token, 200, user);
+	res.redirect('/');
 });
 
 exports.logout = catchAsync(async (req, res, next) => {
@@ -66,18 +70,27 @@ exports.logout = catchAsync(async (req, res, next) => {
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
-	if (! req.headers.authorization || ! req.headers.authorization.startsWith('Bearer')) {
+	let token;
+	if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+		token = req.headers.authorization.split(' ')[1];
+	}
+	else if (req.cookies && req.cookies.jwt) {
+        token = req.cookies.jwt;
+    }
+	if (!token) {
 		return next(new AppError(403, 'You are not authenticated, please sign up or login to do this action.'));
 	}
-	const token = req.headers.authorization.split(' ')[1];
 	const decodedData = jwt.verify(token, process.env.JWT_KEY);
 	if (!decodedData) {
 		return next(new AppError(403, 'JWT Invalid or malformed.'));
 	}
-	console.log(decodedData.id);
+	console.log(decodedData);
 	const user = await User.findById(decodedData.id);
 	if (!user) {
 		return next(new AppError(403, "Something wrong happened, please login again."));
+	}
+	if (user.passwordChangedAfterIssue(decodedData.iat)){
+		return next(new AppError(403, 'Login expired, please login again.'));
 	}
 	req.user = user;
 	next();
@@ -134,8 +147,44 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 		user.password = req.body.password;
 		user.resetToken = undefined;
 		user.passwordResetExpires = undefined;
+		user.passwordChangedAt = Date.now();
 		await user.save();
 		const token = signToken(user._id);
 		sendToken(res, token, 200, user);
 	}
 });
+
+exports.isLoggedin = async (req, res, next) => {
+	let token;
+	if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+		console.log("Authorization header found.");
+		token = req.headers.authorization.split(' ')[1];
+	}
+	else if (req.cookies && req.cookies.jwt) {
+		console.log("Recieved a cookie");
+        token = req.cookies.jwt;
+    }
+	console.log(token);
+	if (!token) {
+		req.isLoggedin = false;
+		return next();
+	}
+	const decodedData = jwt.verify(token, process.env.JWT_KEY);
+	if (!decodedData) {
+		req.isLoggedin = false;
+		return next();
+	}
+	console.log(decodedData);
+	const user = await User.findById(decodedData.id);
+	if (!user) {
+		req.isLoggedin = false;
+		return next();
+	}
+	if (user.passwordChangedAfterIssue(decodedData.iat)){
+		req.isLoggedin = false;
+		return next();
+	}
+	req.isLoggedin = true;
+	console.log(req.isLoggedin);
+	return next();
+};

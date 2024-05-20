@@ -1,0 +1,32 @@
+//- Navbar
+nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
+	//- Container wrapper
+	.container-fluid
+		//- Toggle button
+		button.navbar-toggler(type='button', data-mdb-collapse-init='', data-mdb-target='#navbarSupportedContent', aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
+			i.fas.fa-bars
+
+		//- Collapsible wrapper
+		.collapse.navbar-collapse(id='navbarSupportedContent')
+			//- Navbar brand
+			a.navbar-brand.mt-2.mt-lg-0(href='/')
+				img(src='/img/totick-logo.png', height='50', alt='ToTick Logo')
+			if isLoggedIn
+				ul.navbar-nav.me-auto.mb-2.mb-lg-0
+						li.nav-item
+						a.nav-link(href='/lists') My Lists
+			//- Push right
+			.ms-auto
+				if isLoggedIn
+					//- Right links
+					ul.navbar-nav.mb-2.mb-lg-0
+						li.nav-item
+							a.nav-link(href='/logout') Log out
+				else
+					//- Right links
+					ul.navbar-nav.mb-2.mb-lg-0
+						li.nav-item
+							a.nav-link(href='/signup') Sign up
+						li.nav-item
+							a.nav-link(href='/login') Log in
+					

@@ -42,6 +42,15 @@ const userSchema = new mongoose.Schema({
     },
 });
 
+userSchema.methods.passwordChangedAfterIssue = function(JWTIssueDate) {
+    if (!this.passwordChangedAt){
+        return false;
+    }
+    console.log("Password changed at: ",this.passwordChangedAt);
+    const timeInMs = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+    return timeInMs > JWTIssueDate;
+}
+
 userSchema.methods.createResetPasswordToken = function () {
     const token = crypto.randomBytes(32).toString('hex');
     this.resetToken = crypto.createHash('sha256').update(token).digest('hex');
