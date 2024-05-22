@@ -31,17 +31,15 @@ const getDateAfter = (ms) => {
 exports.signup = catchAsync(async (req, res, next) => {
 	const user = await User.create(req.body);
 	const token = signToken(user._id);
-	res.cookie('jwt', token, {
-		expries : Date.now() + process.env.JWT_EXPIRES_IN * 86400000,
-		httpOnly : true,
-	});
-	sendToken(res, token, 201);
+	if (req.originalUrl.startsWith('/api')){
+		return sendToken(res, token, 201);
+	}
+	res.redirect('/');
 });
 
 exports.login = catchAsync(async (req, res, next) => {
 	const credintials = req.body;
 	const {email, password} = credintials;
-	console.log(req.body);
 	if (! email  || ! password) {
 		return next(new AppError(400, 'Missing Credintials'));
 	}
@@ -51,7 +49,7 @@ exports.login = catchAsync(async (req, res, next) => {
 	}
 	const token = signToken(user._id);
 	if (req.originalUrl.startsWith('/api')){
-		sendToken(res, token, 200, user);
+		return sendToken(res, token, 200, user);
 	}
 	res.cookie('jwt', token, {
 		expries : Date.now() + process.env.JWT_EXPIRES_IN * 86400000,
@@ -115,23 +113,29 @@ exports.forgotPassword = catchAsync(async (req ,res, next) => {
 		  pass: process.env.MAILER_PASSWORD,
 		},
 	  });
+	  const resetUrl = req.originalUrl.startsWith('/api') ? "api/v1/resetPassword" : "resetPassword";
 	const messageID = await transporter.sendMail({
 		from : "agent@totick.com",
 		to : user.email,
 		subject : "Reset your password (Link valid for 10 minutes)",
-		text : `You can reset your password using the following link\n http://localhost/api/v1/resetPassword/${resetToken}`
+		text : `You can reset your password using the following link\n http://localhost/${resetUrl}?resetToken=${resetToken}`
 	});
-	res.status(200).json({
-        status: 'success',
-        message: 'Token sent to email',
-		date : getDateAfter(600000),
-    });
+	if (req.originalUrl.startsWith('/api')){
+		return res.status(200).json({
+			status: 'success',
+			message: 'Reset link sent to your email, please check your inbox.',
+			date : getDateAfter(600000),
+		});	
+	}
+	res.render('forgotPassword', {
+		feedback : "Reset link sent to your email, please check your inbox."
+	});
 });
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
 	const hashedToken = crypto
         .createHash('sha256')
-        .update(req.params.resetToken)
+        .update(req.query.resetToken)
         .digest('hex');
     // query the user that has the reset Token stored and matches the token we sent to the user and make sure that the token didn't expire
     const user = await User.findOne({
@@ -150,41 +154,49 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 		user.passwordChangedAt = Date.now();
 		await user.save();
 		const token = signToken(user._id);
-		sendToken(res, token, 200, user);
+		if (req.originalUrl.startsWith('/api')){
+			return sendToken(res, token, 200, user);
+		}
+		res.cookie('jwt', token, {
+			expries : Date.now() + process.env.JWT_EXPIRES_IN * 86400000,
+			httpOnly : true,
+		});
+		res.redirect('/');
 	}
 });
 
-exports.isLoggedin = async (req, res, next) => {
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
 	let token;
 	if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-		console.log("Authorization header found.");
 		token = req.headers.authorization.split(' ')[1];
 	}
 	else if (req.cookies && req.cookies.jwt) {
-		console.log("Recieved a cookie");
         token = req.cookies.jwt;
     }
-	console.log(token);
 	if (!token) {
-		req.isLoggedin = false;
+		req.isLoggedIn = false;
 		return next();
 	}
 	const decodedData = jwt.verify(token, process.env.JWT_KEY);
 	if (!decodedData) {
-		req.isLoggedin = false;
+		req.isLoggedIn = false;
 		return next();
 	}
-	console.log(decodedData);
 	const user = await User.findById(decodedData.id);
 	if (!user) {
-		req.isLoggedin = false;
+		req.isLoggedIn = false;
 		return next();
 	}
 	if (user.passwordChangedAfterIssue(decodedData.iat)){
-		req.isLoggedin = false;
+		req.isLoggedIn = false;
 		return next();
 	}
-	req.isLoggedin = true;
-	console.log(req.isLoggedin);
-	return next();
-};
+	req.isLoggedIn = true;
+	req.user = user;
+	next();
+});
+
+exports.includeResetToken = catchAsync(async (req, res, next) => {
+	req.resetToken = req.query.resetToken;
+	next();
+});

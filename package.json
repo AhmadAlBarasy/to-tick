@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon server.js",
+    "prod": "nodemon server.js --omit-dev",
     "debug": "ndb server.js"
   },
   "author": "",

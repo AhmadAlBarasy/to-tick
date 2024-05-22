@@ -27,13 +27,13 @@ exports.createList = catchAsync(async(req, res, next) => {
     sendResponse(res, 'success', 201, list);
 });
 
-exports.getList = async(req, res, next) => {
+exports.getList = catchAsync(async(req, res, next) => {
     const list = await List.findOne({_id : req.params.id, user : req.user});
     if (!list) {
         return next(new AppError(404, 'List not found.'));
     }
     sendResponse(res, 'sucess', 200, list);
-};
+});
 
 exports.updateList = catchAsync(async(req, res, next) => {
 	if (req.body.user || req.body.coverPhoto) {
