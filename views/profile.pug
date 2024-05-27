@@ -1,0 +1,30 @@
+extends base
+
+block content
+	if !isLoggedIn
+		.d-flex.flex-column.justify-content-center.align-items-center.min-vh-100.text-center
+			p(style='font-size: 1.5rem;') You have to login to view this page.
+	else
+		.d-flex.flex-column.justify-content-center.align-items-center.min-vh-100.text-center
+			form(action='/profile', method='post', enctype='multipart/form-data')
+				.mb-5
+					label(class='form-label', style='font-size: 4rem;') Your Profile
+				.mb-3
+					img(src=user.profilePicture, alt='Profile Image', style='width: 150px; height: 150px; border-radius: 50%;')
+				.mb-3
+					label(for='name', class='form-label', style='font-size: 1.5rem;') Name
+					input#name.form-control(type='text', name='name', value=user.name, required, style='font-size: 1.5rem;')
+				.mb-3
+					label(for='email', class='form-label', style='font-size: 1.5rem;') Email
+					input#email.form-control(type='email', name='email', value=user.email, required, style='font-size: 1.5rem;')
+				.mb-3
+					label(for='profilePicture', class='form-label', style='font-size: 1.5rem;') Profile Image
+					input#image.form-control(type='file', name='profilePicture', accept='image/*', style='font-size: 1.5rem;')
+				button.btn.btn-primary(type='submit', style='font-size: 1.5rem;') Save Changes
+				.mb-3
+					label(class='form-label', style='font-size: 1.5rem;') #{feedback}
+			
+			//- Form to delete profile picture
+			form(action='/profile', method='post', class='mt-3')
+				input(type='hidden', name='deletePic', value='true')
+				button.btn.btn-danger(type='submit', style='font-size: 1.5rem;') Delete Profile Image

@@ -1,5 +1,9 @@
 const AppError = require('../utils/AppError');
 
+const handleTokenExpiryError = (err) => {
+    return new AppError(403, 'Login expired');
+}
+
 const handleMalformedJWT = (err) => {
     const message = "You are not signed in, please sign in again";
     return new AppError(401, message);
@@ -53,6 +57,11 @@ const sendErrorForProd = (err, req, res) => {
                feedback : err.message,
            });
        }
+       else if (req.url.startsWith('/')){
+        res.clearCookie('jwt').render('login', {
+            feedback : err.message,
+        });
+       }
        else if (req.url.startsWith('/resetPassword')) {
            res.render('resetPassword', {
                feedback : err.message,
@@ -101,6 +110,8 @@ module.exports = (err, req, res, next) => {
             error = handleDuplicateFields(error);
         if (err.message === "jwt malformed")
             error = handleMalformedJWT(error);
+        if (err.name === "TokenExpiredError")
+            error = handleTokenExpiryError(error);
         sendErrorForProd(error, req, res);
     }
 };

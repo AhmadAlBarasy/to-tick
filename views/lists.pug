@@ -1,0 +1,22 @@
+extends base
+
+block content
+	if !isLoggedIn
+		.d-flex.flex-column.justify-content-center.align-items-center.min-vh-100.text-center
+			p(style='font-size: 1.5rem;') You have to login to view this page.
+	else
+		.container.mt-5
+			h1.mb-4 Your Lists
+			if lists.length === 0
+				p(style='font-size: 1.5rem;') You don't have any lists yet.
+			else
+				ul.list-unstyled
+					each list in lists
+						li.d-flex.align-items-start.mb-4.p-3.bg-light.rounded.shadow
+							img(src=list.coverPhoto, alt='Cover Photo', style='width: 100px; height: 100px; object-fit: cover; margin-right: 20px;')
+							.div
+								h3.mb-1
+									a(href=`/lists/${list._id}`, class='text-decoration-none text-primary')= list.name
+								p= list.description
+	.d-flex.justify-content-center.mt-4
+				a.btn.btn-success.btn-lg(href='/lists/create') Create New List

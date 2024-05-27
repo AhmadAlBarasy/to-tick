@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
     profilePicture : {
         type : String,
         required : false,
-        default : '../public/img/user.jpg',
+        default : '/img/user.png',
     },
     password : {
         type : String,
@@ -46,7 +46,6 @@ userSchema.methods.passwordChangedAfterIssue = function(JWTIssueDate) {
     if (!this.passwordChangedAt){
         return false;
     }
-    console.log("Password changed at: ",this.passwordChangedAt);
     const timeInMs = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
     return timeInMs > JWTIssueDate;
 }

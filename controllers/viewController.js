@@ -1,5 +1,5 @@
 const catchAsync = require('../utils/catchAsync');
-const AppError = require('../utils/AppError');
+const List = require('../models/listModel');
 
 exports.getMainPage = (req, res, next) => {
     res.render('home', {
@@ -34,5 +34,34 @@ exports.getResetPasswordPage = (req, res, next) => {
     res.render('resetPassword',{
         isLoggedIn : req.isLoggedIn,
         resetToken : req.resetToken ? req.resetToken : "",
+    });
+};
+
+exports.getProfilePage = (req, res, next)=>{
+    res.render('profile', {
+        isLoggedIn : req.isLoggedIn,
+        user : req.user,
+    });
+};
+
+exports.getListsPage = (req, res, next) => {
+    res.render('lists', {
+        isLoggedIn : req.isLoggedIn,
+        lists : req.lists,
+    });
+};
+
+exports.getUserLists = catchAsync(async (req, res, next) => {
+    if (!req.isLoggedIn){
+        return next();
+    }
+    const lists = await List.find({user : req.user.id});
+    req.lists = lists;
+    next();
+});
+
+exports.getCreateListPage = (req, res, next) => {
+    res.render('createList', {
+        isLoggedIn : req.isLoggedIn,
     });
 };

@@ -21,11 +21,6 @@ const listSchema = new mongoose.Schema({
         type : String,
         default : "things I want to do/achieve",
     },
-    coverPhoto : {
-        type : String,
-        defalut : "../public/img/list.png",
-
-    },
     date : {
         type : Date,
         default : Date.now(),
@@ -40,6 +35,12 @@ const listSchema = new mongoose.Schema({
         type : mongoose.Schema.ObjectId,
         ref : 'User',
         required : true,
+    },
+    coverPhoto : {
+        type : String,
+        required : false,
+        default : "/img/list.png",
+
     }
 });
 

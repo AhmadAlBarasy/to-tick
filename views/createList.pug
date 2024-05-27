@@ -1,0 +1,21 @@
+extends base
+block content
+	if !isLoggedIn
+		.d-flex.flex-column.justify-content-center.align-items-center.min-vh-100.text-center
+			p(style='font-size: 1.5rem;') You have to login to view this page.
+	else
+		.container.mt-5
+			h1.mb-4 Create New List
+			form(action='/lists/create', method='post')
+				.mb-3
+					label(for='name', class='form-label', style='font-size: 1.5rem;') List Name
+					input#name.form-control(type='text', name='name', required, style='font-size: 1.5rem;')
+				.mb-3
+					label(for='description', class='form-label', style='font-size: 1.5rem;') List Description
+					textarea#description.form-control(name='description', rows='3', style='font-size: 1.5rem;')
+				.mb-3
+					label(for='date', class='form-label', style='font-size: 1.5rem;') Date
+					input#date.form-control(type='date', name='date', style='font-size: 1.5rem;')
+				button.btn.btn-primary(type='submit', style='font-size: 1.5rem;') Create List
+				.mb-3
+					label(class='form-label', style='font-size: 1.5rem;') #{feedback}

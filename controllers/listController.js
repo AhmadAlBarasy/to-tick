@@ -23,8 +23,12 @@ exports.getAllLists = catchAsync(async(req, res, next) => {
 });
 
 exports.createList = catchAsync(async(req, res, next) => {
-    const list = await List.create({...req.body, user : req.user.id});
-    sendResponse(res, 'success', 201, list);
+    const list = await List.create({...req.body,
+		user : req.user.id});
+	if (req.baseUrl.startsWith('/api')){
+		return sendResponse(res, 'success', 201, list);
+	}
+	res.redirect('/lists');
 });
 
 exports.getList = catchAsync(async(req, res, next) => {
