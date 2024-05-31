@@ -65,3 +65,23 @@ exports.getCreateListPage = (req, res, next) => {
         isLoggedIn : req.isLoggedIn,
     });
 };
+
+exports.getListPage = (req, res, next) => {
+    res.render('list', {
+        isLoggedIn : req.isLoggedIn,
+        list : req.list,
+    });
+};
+
+exports.getList = catchAsync(async (req, res, next) => {
+    if (!req.isLoggedIn) {
+        return next();
+    }
+    const list = await List.findOne({
+        user : req.user._id,
+        _id : req.params.id,
+    });
+    req.list = list;
+    next();
+
+});

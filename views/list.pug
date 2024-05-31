@@ -1,0 +1,31 @@
+extends base
+
+block content
+  if !isLoggedIn
+    .d-flex.flex-column.justify-content-center.align-items-center.min-vh-100.text-center
+      p(style='font-size: 1.5rem;') You have to login to view this page.
+  else
+    if !list
+      .d-flex.flex-column.justify-content-center.align-items-center.min-vh-100.text-center
+        p(style='font-size: 1.5rem;') List not found.
+    else
+      .container.mt-5
+        .row
+          .col-12
+            h1 #{list.name}
+            p.description(style='font-size: 1rem; color: #666;') #{list.description}
+        form(action=`/lists/${list._id}` method='post')
+          .mb-5
+            each task in list.tasks
+              .mb-3.d-flex.align-items-center
+                input.form-check-input(type='checkbox', name=`${task._id}`, checked=task.done, value="true", style='margin-right: 10px; transform: scale(1.5);')
+                input.form-check-input(type='hidden', name=`${task._id}`, value="false")
+                label(for=`${task._id}` class='form-label me-2', style='font-size: 1.5rem;') #{task.taskText}
+                button.btn.btn-danger.btn-sm.ms-2(type='submit', name='deleteTask', value=`${task._id}`, style='font-size: 1rem; height: auto; padding: 5px 10px;') Delete
+          .mb-3.d-flex.align-items-center
+            input.form-control.me-2(type='text', name='taskText', placeholder='New task', style='font-size: 1.5rem; height: auto;')
+            button.btn.btn-primary(type='submit', name='createTask', value='true', style='font-size: 1.5rem; height: auto; padding: 5px 10px;') Create Task
+          .mb-3
+            button.btn.btn-primary(type='submit', name='saveChanges', value='true', style='font-size: 1.5rem; height: auto; padding: 5px 10px;') Save Changes
+          .mb-3
+            label(class='form-label', style='font-size: 1.5rem;') #{feedback}

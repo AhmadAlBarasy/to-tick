@@ -52,30 +52,37 @@ const sendErrorForDev = (err, req, res) => {
 
 const sendErrorForProd = (err, req, res) => {
     if (err.isOperational) {
-        if (req.url.startsWith('/login')){
+        if (req.originalUrl.startsWith('/login')){
             res.render('login', {
                feedback : err.message,
            });
        }
-       else if (req.url.startsWith('/')){
-        res.clearCookie('jwt').render('login', {
-            feedback : err.message,
-        });
-       }
-       else if (req.url.startsWith('/resetPassword')) {
+       else if (req.originalUrl.startsWith('/resetPassword')) {
            res.render('resetPassword', {
                feedback : err.message,
            });
        }
-       else if (req.url.startsWith('/signup')){
+       else if (req.originalUrl.startsWith('/signup')){
            res.render('signup', {
                feedback : err.message,
            });
        }
-       else if (req.url.startsWith('/forgotPassword')){
+       else if (req.originalUrl.startsWith('/forgotPassword')){
            res.render('forgotPassword', {
                feedback : err.message,
            });
+       }
+       else if (req.originalUrl.startsWith('/profile')){
+           res.render('profile', {
+                isLoggedIn : req.isLoggedIn,
+                user : req.user,
+                feedback : err.message,
+           });
+       }
+       else if (req.originalUrl.startsWith('/')){
+        res.clearCookie('jwt').render('login', {
+            feedback : err.message,
+        });
        }
         else {
             res.status(err.statusCode).json({
@@ -106,6 +113,8 @@ module.exports = (err, req, res, next) => {
         );
         if (err.name === "ValidationError")
             error = handleValidationError(error);
+        if (err.name === "JsonWebTokenError")
+            error = handleMalformedJWT(error);
         if (err.code === 11000) 
             error = handleDuplicateFields(error);
         if (err.message === "jwt malformed")

@@ -6,7 +6,6 @@ const http = require('http');
 dotenv.config({ path: './config.env' });
 const port = process.env.PORT || 80;
 const DB = process.env.DB.replace('<PASSWORD>', process.env.DB_PASSWORD);
-const cat = "20";
 mongoose
     .connect(DB, {
         dbName: process.env.DB_NAME,
