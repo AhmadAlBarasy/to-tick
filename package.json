@@ -1,40 +1,46 @@
 {
-  "name": "to-tick",
-  "version": "1.0.0",
-  "description": "simple to do list web application",
-  "main": "index.js",
-  "scripts": {
-    "dev": "nodemon server.js",
-    "prod": "nodemon server.js --omit-dev",
-    "debug": "ndb server.js"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "bcrypt": "^5.1.1",
-    "cookie-parser": "^1.4.6",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "express-mongo-sanitize": "^2.2.0",
-    "express-rate-limit": "^7.2.0",
-    "helmet": "^7.1.0",
-    "hpp": "^0.2.3",
-    "jsonwebtoken": "^9.0.2",
-    "moment": "^2.30.1",
-    "mongoose": "^8.3.4",
-    "multer": "^1.4.5-lts.1",
-    "nodemailer": "^6.9.13",
-    "pug": "^3.0.2",
-    "validator": "^13.12.0",
-    "xss-clean": "^0.1.4"
-  },
-  "devDependencies": {
-    "eslint": "^8.2.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.25.2",
-    "morgan": "^1.10.0",
-    "ndb": "^1.1.5",
-    "nodemon": "^3.1.0"
-  }
+    "name": "to-tick",
+    "version": "1.0.0",
+    "description": "simple to do list web application",
+    "main": "index.js",
+    "scripts": {
+        "dev": "nodemon server.js",
+        "debug": "ndb server.js",
+        "lint:init": "eslint --init",
+        "format:check": "prettier --check .",
+        "format:write": "prettier --write .",
+        "lint:check": "eslint .",
+        "lint:fix": "eslint --fix ."
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "bcrypt": "^5.1.1",
+        "cookie-parser": "^1.4.6",
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.5",
+        "express": "^4.19.2",
+        "express-mongo-sanitize": "^2.2.0",
+        "express-rate-limit": "^7.2.0",
+        "helmet": "^7.1.0",
+        "hpp": "^0.2.3",
+        "jsonwebtoken": "^9.0.2",
+        "moment": "^2.30.1",
+        "mongoose": "^8.3.4",
+        "multer": "^1.4.5-lts.1",
+        "nodemailer": "^6.9.13",
+        "pug": "^3.0.2",
+        "validator": "^13.12.0",
+        "xss-clean": "^0.1.4"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.6.0",
+        "eslint": "^9.6.0",
+        "eslint-config-prettier": "^9.1.0",
+        "globals": "^15.8.0",
+        "morgan": "^1.10.0",
+        "ndb": "^1.1.5",
+        "nodemon": "^3.1.0",
+        "prettier": "^3.3.2"
+    }
 }

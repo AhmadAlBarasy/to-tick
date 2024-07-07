@@ -4,35 +4,35 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 
 const userSchema = new mongoose.Schema({
-    name : {
-        type : String,
+    name: {
+        type: String,
         trim: true,
-        required : [true, 'A user must have a name.'],
-        minLength : 3,
+        required: [true, 'A user must have a name.'],
+        minLength: 3,
     },
-    email : {
-        type : String,
+    email: {
+        type: String,
         trim: true,
-        unique : true,
+        unique: true,
         lowercase: true,
-        required : [true, 'A user must have an email.'],
-        validate : [validator.isEmail, 'A User must have a valid email.'],
+        required: [true, 'A user must have an email.'],
+        validate: [validator.isEmail, 'A User must have a valid email.'],
     },
-    profilePicture : {
-        type : String,
-        required : false,
-        default : '/img/user.png',
+    profilePicture: {
+        type: String,
+        required: false,
+        default: '/img/user.png',
     },
-    password : {
-        type : String,
-        required : true,
-        minLength : [8, 'a password must be at least 8 characters'],
-        select : false,
+    password: {
+        type: String,
+        required: true,
+        minLength: [8, 'a password must be at least 8 characters'],
+        select: false,
     },
     passwordChangedAt: Date,
     resetToken: {
-        type : String,
-        select : false,
+        type: String,
+        select: false,
     },
     passwordResetExpires: Date,
     active: {
@@ -42,13 +42,13 @@ const userSchema = new mongoose.Schema({
     },
 });
 
-userSchema.methods.passwordChangedAfterIssue = function(JWTIssueDate) {
-    if (!this.passwordChangedAt){
+userSchema.methods.passwordChangedAfterIssue = function (JWTIssueDate) {
+    if (!this.passwordChangedAt) {
         return false;
     }
     const timeInMs = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
     return timeInMs > JWTIssueDate;
-}
+};
 
 userSchema.methods.createResetPasswordToken = function () {
     const token = crypto.randomBytes(32).toString('hex');
@@ -56,14 +56,14 @@ userSchema.methods.createResetPasswordToken = function () {
     const date = Date.now() + 600000;
     this.passwordResetExpires = date;
     return token;
-}
+};
 
 userSchema.methods.correctPassword = async function (input, userPassword) {
     return bcrypt.compare(input, userPassword);
 };
 
 userSchema.pre('save', async function (next) {
-    if (!this.isModified('password')){
+    if (!this.isModified('password')) {
         return next();
     }
     this.password = await bcrypt.hash(this.password, 12);

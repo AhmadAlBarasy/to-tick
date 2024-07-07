@@ -1,7 +1,0 @@
-{
-	"extends": "airbnb-base",
-	"rules" : {
-		"no-console" : "error",
-		"no-unused-vars": ["error", { "argsIgnorePatterns": ["^req$", "^res$", "^err$", "^con$"] }]
-	}
-}

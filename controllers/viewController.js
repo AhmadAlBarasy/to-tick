@@ -3,14 +3,14 @@ const List = require('../models/listModel');
 
 exports.getMainPage = (req, res, next) => {
     res.render('home', {
-        isLoggedIn : req.isLoggedIn,
-        username : req.user ? req.user.name : "",
+        isLoggedIn: req.isLoggedIn,
+        username: req.user ? req.user.name : '',
     });
 };
 
 exports.getLoginPage = (req, res, next) => {
     res.render('login', {
-        isLoggedIn : req.isLoggedIn,
+        isLoggedIn: req.isLoggedIn,
     });
 };
 
@@ -20,56 +20,56 @@ exports.logout = (req, res, next) => {
 
 exports.getSignupPage = (req, res, next) => {
     res.render('signup', {
-        isLoggedIn : req.isLoggedIn,
+        isLoggedIn: req.isLoggedIn,
     });
 };
 
 exports.getForgotPasswordPage = (req, res, next) => {
     res.render('forgotPassword', {
-        isLoggedIn : req.isLoggedIn,    
+        isLoggedIn: req.isLoggedIn,
     });
 };
 
 exports.getResetPasswordPage = (req, res, next) => {
-    res.render('resetPassword',{
-        isLoggedIn : req.isLoggedIn,
-        resetToken : req.resetToken ? req.resetToken : "",
+    res.render('resetPassword', {
+        isLoggedIn: req.isLoggedIn,
+        resetToken: req.resetToken ? req.resetToken : '',
     });
 };
 
-exports.getProfilePage = (req, res, next)=>{
+exports.getProfilePage = (req, res, next) => {
     res.render('profile', {
-        isLoggedIn : req.isLoggedIn,
-        user : req.user,
+        isLoggedIn: req.isLoggedIn,
+        user: req.user,
     });
 };
 
 exports.getListsPage = (req, res, next) => {
     res.render('lists', {
-        isLoggedIn : req.isLoggedIn,
-        lists : req.lists,
+        isLoggedIn: req.isLoggedIn,
+        lists: req.lists,
     });
 };
 
 exports.getUserLists = catchAsync(async (req, res, next) => {
-    if (!req.isLoggedIn){
+    if (!req.isLoggedIn) {
         return next();
     }
-    const lists = await List.find({user : req.user.id});
+    const lists = await List.find({ user: req.user.id });
     req.lists = lists;
     next();
 });
 
 exports.getCreateListPage = (req, res, next) => {
     res.render('createList', {
-        isLoggedIn : req.isLoggedIn,
+        isLoggedIn: req.isLoggedIn,
     });
 };
 
 exports.getListPage = (req, res, next) => {
     res.render('list', {
-        isLoggedIn : req.isLoggedIn,
-        list : req.list,
+        isLoggedIn: req.isLoggedIn,
+        list: req.list,
     });
 };
 
@@ -78,10 +78,9 @@ exports.getList = catchAsync(async (req, res, next) => {
         return next();
     }
     const list = await List.findOne({
-        user : req.user._id,
-        _id : req.params.id,
+        user: req.user._id,
+        _id: req.params.id,
     });
     req.list = list;
     next();
-
 });
